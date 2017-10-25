@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         connection = getRemoteConnection();
+
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
@@ -50,8 +51,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Connection conn = getRemoteConnection();
             try {
                 String driver = "com.mysql.jdbc.Driver";
-                String url = "jdbc:postgresql://" + hostname + ":" + port + "/" + dbName + "?user=" + userName + "&password=" + password;
-                String urlRefined = "jdbc:postgresql://" + "heartbeatdata.cvqgs9wo2qak.us-west-1.rds.amazonaws.com" + ":" + "3306" + "/" + "heartbeatdata" + "?user=" + "waffledefender" + "&password=" + "1_Tails_4";
+                String url = "jdbc:mysql://" + hostname + ":" + port + "/" + dbName + "?user=" + userName + "&password=" + password;
+                String urlRefined = "jdbc:mysql://" + "heartbeatdata.cvqgs9wo2qak.us-west-1.rds.amazonaws.com" + ":" + "3306" + "/" + "heartbeatdata" + "?user=" + "waffledefender" + "&password=" + "1_Tails_4";
 
                 Class.forName(driver);
                 Connection connection = DriverManager.getConnection(urlRefined);
