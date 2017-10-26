@@ -17,11 +17,11 @@ import java.util.logging.Logger;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Connection connection = null;
-    private static String dbName = System.getenv("heartbeatdata");
-    private static String userName = System.getenv("waffledefender");
-    private static String password = System.getenv("1_Tails_4");
-    private static String hostname = System.getenv("heartbeatdata.cvqgs9wo2qak.us-west-1.rds.amazonaws.com");
-    private static String port = System.getenv("3306");
+    private static String dbName = "heartbeatdata";
+    private static String userName = "waffledefender";
+    private static String password = "1_Tails_4";
+    private static String hostname = "heartbeatdata.cvqgs9wo2qak.us-west-1.rds.amazonaws.com";
+    private static String port = "3306";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,11 +51,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Connection conn = getRemoteConnection();
             try {
                 String driver = "com.mysql.jdbc.Driver";
-                String url = "jdbc:mysql://" + hostname + ":" + port + "/" + dbName + "?user=" + userName + "&password=" + password;
-                String urlRefined = "jdbc:mysql://" + "heartbeatdata.cvqgs9wo2qak.us-west-1.rds.amazonaws.com" + ":" + "3306" + "/" + "heartbeatdata" + "?user=" + "waffledefender" + "&password=" + "1_Tails_4";
+                String url = "jdbc:mysql://" + hostname + ":" + port + "/" + dbName + "?user=" + userName + "&password=" + password + "?autoconnect=true";
 
                 Class.forName(driver);
-                Connection connection = DriverManager.getConnection(urlRefined);
+                connection = DriverManager.getConnection(url);
                 System.out.println(connection.toString());
             } catch (SQLException e) {
                 e.printStackTrace();
