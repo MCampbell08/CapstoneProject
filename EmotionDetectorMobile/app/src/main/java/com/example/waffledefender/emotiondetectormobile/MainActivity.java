@@ -39,9 +39,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(preferences.contains("heartbeatVal")){
 
             String beat = preferences.getString("heartbeatVal", "00");
+            String emotion = preferences.getString("heartbeatEmotion", "Meh");
 
             TextView heartbeatTextView = (TextView) findViewById(R.id.heartrate);
             heartbeatTextView.setText(beat);
+
+            TextView emotionTextView = (TextView) findViewById(R.id.currentEmotion);
+            emotionTextView.setText(emotion);
             heartbeatNum = beat;
         }
         translate = new EmotionTranslate(heartbeatNum);
@@ -78,11 +82,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 ResultSet resultSet = statement.executeQuery("select * from heartbeat");
                 resultSet.next();
+
                 String heartbeat = resultSet.getString("HeartbeatValue");
+                String emotion = translate.translate().toString();
+
                 TextView heartbeatTextView = (TextView) findViewById(R.id.heartrate);
+                TextView emotionTextView = (TextView) findViewById(R.id.currentEmotion);
+
                 heartbeatTextView.setText(heartbeat);
+                emotionTextView.setText(emotion);
+
                 SharedPreferences.Editor mEditor = getSharedPreferences("Preferences", 0).edit();
                 mEditor.putString("heartbeatVal", heartbeatTextView.getText().toString()).commit();
+                mEditor.putString("heartbeatEmotion", emotion).commit();
                 Toast.makeText(this, "Updated as of: " + resultSet.getString("TimeOfRecord"), Toast.LENGTH_SHORT).show();
 
             } catch (SQLException e) {
