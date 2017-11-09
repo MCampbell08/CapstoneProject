@@ -5,8 +5,6 @@ import android.content.SharedPreferences;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,7 +16,6 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.logging.Logger;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -84,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 resultSet.next();
 
                 String heartbeat = resultSet.getString("HeartbeatValue");
+                translate.setCurrentHeartbeat(heartbeat);
                 String emotion = translate.translate().toString();
 
                 TextView heartbeatTextView = (TextView) findViewById(R.id.heartrate);

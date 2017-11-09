@@ -7,6 +7,7 @@ import java.util.ArrayList;
  */
 
 public class EmotionTranslate {
+
     private String currentHeartbeat = null;
 
     private ArrayList<Integer[]> emotionsNumbers = new ArrayList<>();
@@ -24,6 +25,12 @@ public class EmotionTranslate {
 
     EmotionTranslate(String heartbeatNum){
         currentHeartbeat = heartbeatNum;
+    }
+
+    private void reInitialize(){
+        resetNums();
+        removeFromArrays();
+        addToArrays();
     }
 
     public EmotionType translate(){
@@ -48,8 +55,12 @@ public class EmotionTranslate {
         return emotionType;
     }
 
+    public void setCurrentHeartbeat(String currentHeartbeat) {
+        this.currentHeartbeat = currentHeartbeat;
+    }
+
     private void averageNumbers(){
-        addToArrays();
+        reInitialize();
 
         for(int i = 0; i < emotionsNumbers.size(); i++){
             for(int j = 0; j < emotionsNumbers.get(i).length; j++){
@@ -82,5 +93,15 @@ public class EmotionTranslate {
         emotionsNumbersSum.add(happyAverage);
         emotionsNumbersSum.add(excitedAverage);
         emotionsNumbersSum.add(stressedAverage);
+    }
+    private void removeFromArrays(){
+        emotionsNumbers.clear();
+        emotionsNumbersSum.clear();
+    }
+    private void resetNums(){
+        relaxedAverage = 0;
+        happyAverage = 0;
+        excitedAverage = 0;
+        stressedAverage = 0;
     }
 }

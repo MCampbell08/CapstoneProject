@@ -2,23 +2,13 @@ package com.example.waffledefender.emotiondetectormobile;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.annotation.IdRes;
-import android.support.v7.app.AppCompatActivity;
+import android.preference.PreferenceActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
-import java.util.ArrayList;
-import java.util.List;
-
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends PreferenceActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,11 +28,11 @@ public class SettingsActivity extends AppCompatActivity {
         if(id == R.id.action_settings){
             SharedPreferences.Editor editPref = getSharedPreferences("SettingsPreferences", 0).edit();
 
-            TextView petName = (TextView)findViewById(R.id.nameEditable);
-            editPref.putString("petName", petName.getText().toString()).commit();
-
-            TextView petAge = (TextView)findViewById(R.id.ageEditable);
-            editPref.putString("petAge", petAge.getText().toString()).commit();
+//            TextView petName = (TextView)findViewById(R.id.nameEditable);
+//            editPref.putString("petName", petName.getText().toString()).commit();
+//
+//            TextView petAge = (TextView)findViewById(R.id.ageEditable);
+//            editPref.putString("petAge", petAge.getText().toString()).commit();
 
             startActivity(new Intent(SettingsActivity.this, MainActivity.class));
             return true;
@@ -55,13 +45,13 @@ public class SettingsActivity extends AppCompatActivity {
         if(preferences != null){
             String petName = preferences.getString("petName", "Fido");
 
-            TextView petNameTextView = (TextView) findViewById(R.id.nameEditable);
-            petNameTextView.setText(petName);
-
-            String petAge = preferences.getString("petAge", "42");
-
-            TextView petAgeTextView = (TextView) findViewById(R.id.ageEditable);
-            petAgeTextView.setText(petAge);
+//            TextView petNameTextView = (TextView) findViewById(R.id.nameEditable);
+//            petNameTextView.setText(petName);
+//
+//            String petAge = preferences.getString("petAge", "42");
+//
+//            TextView petAgeTextView = (TextView) findViewById(R.id.ageEditable);
+//            petAgeTextView.setText(petAge);
         }
     }
 }

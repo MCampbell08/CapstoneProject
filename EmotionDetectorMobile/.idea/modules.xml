@@ -6,7 +6,6 @@
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/mysql-connector-java-5.0.8-bin/mysql-connector-java-5.0.8-bin.iml" filepath="$PROJECT_DIR$/mysql-connector-java-5.0.8-bin/mysql-connector-java-5.0.8-bin.iml" />
       <module fileurl="file://$PROJECT_DIR$/postgresql-42.1.4.jre7/postgresql-42.1.4.jre7.iml" filepath="$PROJECT_DIR$/postgresql-42.1.4.jre7/postgresql-42.1.4.jre7.iml" />
-      <module fileurl="file://C:\NinthQuartCode\CapstoneProject\EmotionDetectorMobile\postgresql-42.1.4.jre7\postgresql-42.1.4.jre7.iml" filepath="C:\NinthQuartCode\CapstoneProject\EmotionDetectorMobile\postgresql-42.1.4.jre7\postgresql-42.1.4.jre7.iml" />
     </modules>
   </component>
 </project>
