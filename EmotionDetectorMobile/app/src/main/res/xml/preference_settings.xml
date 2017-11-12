@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="@string/dog_information"
+        android:key="pref_key_dog_settings">
+        <Preference
+            android:key="pref_key_dog_name"
+            android:summary="@string/pref_summary_dog_name"
+            android:title="@string/pref_title_dog_name"
+            android:defaultValue="Fido"/>
+        <Preference
+            android:key="pref_key_dog_age"
+            android:summary="@string/pref_summary_dog_age"
+            android:title="@string/pref_title_dog_age"/>
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/dog_information"
+        android:key="pref_key_dog_settings">
+        <CheckBoxPreference
+            android:key="pref_key_beat_heartbeat"
+            android:defaultValue="false"
+            android:summary="@string/pref_summary_beat_heartbeat"
+            android:title="@string/pref_title_beat_heartbeat"/>
+
+    </PreferenceCategory>
+
+
+</PreferenceScreen>
