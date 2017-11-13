@@ -3,15 +3,16 @@
     <PreferenceCategory
         android:title="@string/dog_information"
         android:key="pref_key_dog_settings">
-        <Preference
+        <EditTextPreference
             android:key="pref_key_dog_name"
             android:summary="@string/pref_summary_dog_name"
             android:title="@string/pref_title_dog_name"
             android:defaultValue="Fido"/>
-        <Preference
+        <EditTextPreference
             android:key="pref_key_dog_age"
             android:summary="@string/pref_summary_dog_age"
-            android:title="@string/pref_title_dog_age"/>
+            android:title="@string/pref_title_dog_age"
+            android:defaultValue="42"/>
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/dog_information"
