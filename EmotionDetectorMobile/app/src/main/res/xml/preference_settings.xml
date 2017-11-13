@@ -17,15 +17,15 @@
     <PreferenceCategory
         android:title="@string/apps_appearance"
         android:key="pref_key_dog_settings">
-        <CheckBoxPreference
-            android:key="pref_key_beat_heartbeat"
-            android:defaultValue="false"
-            android:summary="@string/pref_summary_beat_heartbeat"
-            android:title="@string/pref_title_beat_heartbeat"/>
-        <Preference
-            android:key="pref_key_app_appearance"
-            android:summary="@string/pref_summary_app_appearance"
-            android:title="@string/pref_title_app_appearance"/>
+        <!--<CheckBoxPreference-->
+            <!--android:key="pref_key_beat_heartbeat"-->
+            <!--android:defaultValue="false"-->
+            <!--android:summary="@string/pref_summary_beat_heartbeat"-->
+            <!--android:title="@string/pref_title_beat_heartbeat"/>-->
+        <!--<Preference-->
+            <!--android:key="pref_key_app_appearance"-->
+            <!--android:summary="@string/pref_summary_app_appearance"-->
+            <!--android:title="@string/pref_title_app_appearance"/>-->
     </PreferenceCategory>
 
 
