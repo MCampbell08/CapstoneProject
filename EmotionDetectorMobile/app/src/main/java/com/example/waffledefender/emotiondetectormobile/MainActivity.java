@@ -3,11 +3,13 @@ package com.example.waffledefender.emotiondetectormobile;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.StrictMode;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,23 +33,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        String heartbeatNum = "00";
-        SharedPreferences preferences = getSharedPreferences("Preferences", 0);
-        if(preferences.contains("heartbeatVal")){
-
-            String beat = preferences.getString("heartbeatVal", "00");
-            String emotion = preferences.getString("heartbeatEmotion", "Meh");
-
-            TextView heartbeatTextView = (TextView) findViewById(R.id.heartrate);
-            heartbeatTextView.setText(beat);
-
-            TextView emotionTextView = (TextView) findViewById(R.id.currentEmotion);
-            emotionTextView.setText(emotion);
-            heartbeatNum = beat;
-        }
-        translate = new EmotionTranslate(heartbeatNum);
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
+        initPreferences();
+        setOnClickListeners();
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
@@ -112,5 +99,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+    private void initPreferences(){
+        String heartbeatNum = "00";
+        SharedPreferences preferences = getSharedPreferences("Preferences", 0);
+        if(preferences.contains("heartbeatVal")){
+
+            String beat = preferences.getString("heartbeatVal", "00");
+            String emotion = preferences.getString("heartbeatEmotion", "Meh");
+
+            TextView heartbeatTextView = (TextView) findViewById(R.id.heartrate);
+            heartbeatTextView.setText(beat);
+
+            TextView emotionTextView = (TextView) findViewById(R.id.currentEmotion);
+            emotionTextView.setText(emotion);
+            heartbeatNum = beat;
+        }
+        translate = new EmotionTranslate(heartbeatNum);
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+    }
+    private void setOnClickListeners(){
+        ImageView avatarIcon = (ImageView)findViewById(R.id.accountIcon);
+
+        avatarIcon.setClickable(true);
+        avatarIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(intent, RESULT_OK);
+            }
+        });
     }
 }
