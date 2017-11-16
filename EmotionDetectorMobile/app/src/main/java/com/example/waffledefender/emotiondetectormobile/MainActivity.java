@@ -2,6 +2,9 @@ package com.example.waffledefender.emotiondetectormobile;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
@@ -22,12 +25,15 @@ import java.sql.Statement;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Connection connection = null;
+
     private static String dbName = "heartbeatdata";
     private static String userName = "waffledefender";
     private static String password = "1_Tails_4";
     private static String hostname = "heartbeatdata.cvqgs9wo2qak.us-west-1.rds.amazonaws.com";
     private static String port = "3306";
     private static EmotionTranslate translate = null;
+
+    private static final int RESULT_LOAD_IMAGE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,5 +136,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivityForResult(intent, RESULT_OK);
             }
         });
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+
+        try{
+            if(requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && data != null){
+                Uri selectedImage = data.getData();
+                String[] filePath = {MediaStore.Images.Media.DATA };
+
+                Cursor cursor = getContentResolver().query(selectedImage, filePath, null, null, null);
+                cursor.moveToFirst();
+
+                int index = cursor.getColumnIndex(filePath[0]);
+                String decodeString = cursor.getString(index);
+                cursor.close();
+
+                ImageView image = (ImageView)findViewById(R.id.accountIcon);
+                image.setImageBitmap(BitmapFactory.decodeFile(decodeString));
+            }
+            else{
+                Toast.makeText(this, "No image selected", Toast.LENGTH_SHORT).show();
+            }
+        }
+        catch (Exception e){
+            Toast.makeText(this, "Can not use this image, please try again or select another!", Toast.LENGTH_SHORT).show();
+        }
     }
 }
