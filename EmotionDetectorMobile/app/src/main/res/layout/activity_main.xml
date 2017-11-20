@@ -44,12 +44,11 @@
         android:layout_marginTop="8dp"
         android:text="00"
         android:textAlignment="center"
-        android:textSize="32sp"
+        android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="@+id/heartIcon"
         app:layout_constraintLeft_toLeftOf="@+id/heartIcon"
         app:layout_constraintRight_toRightOf="@+id/heartIcon"
-        app:layout_constraintTop_toTopOf="@+id/heartIcon"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toTopOf="@+id/heartIcon" />
 
     <TextView
         android:id="@+id/currentEmotion"

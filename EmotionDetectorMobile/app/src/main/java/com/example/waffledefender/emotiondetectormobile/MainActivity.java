@@ -1,9 +1,9 @@
 package com.example.waffledefender.emotiondetectormobile;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.graphics.BitmapFactory;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.StrictMode;
 import android.provider.MediaStore;
@@ -21,6 +21,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -31,9 +32,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static String password = "1_Tails_4";
     private static String hostname = "heartbeatdata.cvqgs9wo2qak.us-west-1.rds.amazonaws.com";
     private static String port = "3306";
+
     private static EmotionTranslate translate = null;
+    private static ArrayList<String> heartRates = null;
 
     private static final int RESULT_LOAD_IMAGE = 1;
+    private static final int PIC_CROP = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initPreferences();
         setOnClickListeners();
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         getMenuInflater().inflate(R.menu.settings_selection, menu);
@@ -68,13 +73,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void displayHeartbeat(){
         if(connection != null) {
             try {
+                heartRates = new ArrayList<>();
                 Statement statement = connection.createStatement();
 
+                String heartbeat = null;
                 ResultSet resultSet = statement.executeQuery("select * from heartbeat");
-                resultSet.next();
-
-                String heartbeat = resultSet.getString("HeartbeatValue");
-                translate.setCurrentHeartbeat(heartbeat);
+                while(resultSet.next()) {
+                    heartbeat = resultSet.getString("HeartbeatValue");
+                    heartRates.add(heartbeat);
+                }
+                translate.setCurrentHeartbeat(heartRates.get(0));
                 String emotion = translate.translate().toString();
 
                 TextView heartbeatTextView = (TextView) findViewById(R.id.heartrate);
@@ -84,8 +92,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 emotionTextView.setText(emotion);
 
                 SharedPreferences.Editor mEditor = getSharedPreferences("Preferences", 0).edit();
+
                 mEditor.putString("heartbeatVal", heartbeatTextView.getText().toString()).commit();
                 mEditor.putString("heartbeatEmotion", emotion).commit();
+
+                resultSet = statement.executeQuery("select * from heartbeat");
+                resultSet.next();
+
                 Toast.makeText(this, "Updated as of: " + resultSet.getString("TimeOfRecord"), Toast.LENGTH_SHORT).show();
 
             } catch (SQLException e) {
@@ -113,12 +126,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             String beat = preferences.getString("heartbeatVal", "00");
             String emotion = preferences.getString("heartbeatEmotion", "Meh");
+            Uri imageURI = Uri.parse(preferences.getString("profileUri", ""));
 
             TextView heartbeatTextView = (TextView) findViewById(R.id.heartrate);
             heartbeatTextView.setText(beat);
 
             TextView emotionTextView = (TextView) findViewById(R.id.currentEmotion);
             emotionTextView.setText(emotion);
+
+            ImageView imageView = (ImageView) findViewById(R.id.accountIcon);
+            imageView.setImageURI(imageURI);
+
             heartbeatNum = beat;
         }
         translate = new EmotionTranslate(heartbeatNum);
@@ -133,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(intent, RESULT_OK);
+                startActivityForResult(intent, RESULT_LOAD_IMAGE);
             }
         });
     }
@@ -144,17 +162,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         try{
             if(requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && data != null){
                 Uri selectedImage = data.getData();
-                String[] filePath = {MediaStore.Images.Media.DATA };
+                performCropping(selectedImage);
 
-                Cursor cursor = getContentResolver().query(selectedImage, filePath, null, null, null);
-                cursor.moveToFirst();
+                SharedPreferences.Editor mEditor = getSharedPreferences("Preferences", 0).edit();
 
-                int index = cursor.getColumnIndex(filePath[0]);
-                String decodeString = cursor.getString(index);
-                cursor.close();
+                mEditor.putString("profileUri", selectedImage.toString()).commit();
+            }
+            else if(requestCode == PIC_CROP){
+                Bundle extras = data.getExtras();
+                Bitmap thePic = extras.getParcelable("data");
 
-                ImageView image = (ImageView)findViewById(R.id.accountIcon);
-                image.setImageBitmap(BitmapFactory.decodeFile(decodeString));
+                ImageView imageView = (ImageView)findViewById(R.id.accountIcon);
+                imageView.setImageBitmap(thePic);
             }
             else{
                 Toast.makeText(this, "No image selected", Toast.LENGTH_SHORT).show();
@@ -162,6 +181,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         catch (Exception e){
             Toast.makeText(this, "Can not use this image, please try again or select another!", Toast.LENGTH_SHORT).show();
+        }
+    }
+    private void performCropping(Uri picUri){
+        try {
+            Intent cropIntent = new Intent("com.android.camera.action.CROP");
+            //indicate image type and Uri
+            cropIntent.setDataAndType(picUri, "image/*");
+            //set crop properties
+            cropIntent.putExtra("crop", "true");
+            //indicate aspect of desired crop
+            cropIntent.putExtra("aspectX", 1);
+            cropIntent.putExtra("aspectY", 1);
+            //indicate output X and Y
+            cropIntent.putExtra("outputX", 256);
+            cropIntent.putExtra("outputY", 256);
+            //retrieve data on return
+            cropIntent.putExtra("return-data", true);
+            //start the activity - we handle returning in onActivityResult
+            startActivityForResult(cropIntent, PIC_CROP);
+        }
+        catch(ActivityNotFoundException e){
+            //display an error message
+            String errorMessage = "Whoops - your device doesn't support the crop action!";
+            Toast toast = Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT);
+            toast.show();
         }
     }
 }

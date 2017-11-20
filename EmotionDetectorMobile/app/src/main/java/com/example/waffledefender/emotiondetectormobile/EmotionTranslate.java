@@ -14,7 +14,7 @@ public class EmotionTranslate {
     private ArrayList<Integer> emotionsNumbersSum = new ArrayList<>();
 
     private Integer[] relaxedNumbers = {136, 94, 128, 117, 115};
-    private Integer[] happyNumbers = {143, 135};
+    private Integer[] happyNumbers = {143, 135, 161, 165, 168};
     private Integer[] excitedNumbers = {135, 145, 153};
     private Integer[] stressedNumbers = {172};
 
@@ -39,16 +39,16 @@ public class EmotionTranslate {
         Integer currentHeartbeatNum = currentHeartbeatNumDub.intValue();
         averageNumbers();
 
-        if(currentHeartbeatNum == relaxedAverage || (currentHeartbeatNum <= relaxedAverage + 5 && currentHeartbeatNum >= relaxedAverage - 5)){
+        if(currentHeartbeatNum == relaxedAverage || (currentHeartbeatNum <= relaxedAverage + 10 && currentHeartbeatNum >= relaxedAverage - 10)){
             emotionType = EmotionType.Relaxed;
         }
-        else if(currentHeartbeatNum == happyAverage || (currentHeartbeatNum <= happyAverage + 5 && currentHeartbeatNum >= happyAverage - 5)){
+        else if(currentHeartbeatNum == happyAverage || (currentHeartbeatNum <= happyAverage + 10 && currentHeartbeatNum >= happyAverage - 10)){
             emotionType = EmotionType.Happy;
         }
-        else if(currentHeartbeatNum == excitedAverage || (currentHeartbeatNum <= excitedAverage + 5 && currentHeartbeatNum >= excitedAverage - 5)){
+        else if(currentHeartbeatNum == excitedAverage || (currentHeartbeatNum <= excitedAverage + 10 && currentHeartbeatNum >= excitedAverage - 10)){
             emotionType = EmotionType.Excited;
         }
-        else if(currentHeartbeatNum == stressedAverage || (currentHeartbeatNum <= stressedAverage + 5 && currentHeartbeatNum >= stressedAverage - 5)){
+        else if(currentHeartbeatNum == stressedAverage || (currentHeartbeatNum <= stressedAverage + 10 && currentHeartbeatNum >= stressedAverage - 10)){
             emotionType = EmotionType.Stressed;
         }
 
