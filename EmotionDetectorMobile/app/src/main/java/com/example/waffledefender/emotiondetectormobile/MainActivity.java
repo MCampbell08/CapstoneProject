@@ -1,5 +1,6 @@
 package com.example.waffledefender.emotiondetectormobile;
 
+import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -122,6 +123,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    @SuppressLint("NewApi")
     private void displayHeartbeat(){
         if(connection != null) {
             try {
