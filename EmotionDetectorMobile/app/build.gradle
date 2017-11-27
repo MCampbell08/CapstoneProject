@@ -29,6 +29,8 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.github.lecho:hellocharts-library:1.5.8@aar'
+
     testCompile 'junit:junit:4.12'
     compile project(':mysql-connector-java-5.0.8-bin')
     implementation project(':postgresql-42.1.4.jre7')
