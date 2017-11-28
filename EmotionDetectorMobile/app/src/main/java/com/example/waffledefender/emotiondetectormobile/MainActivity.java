@@ -32,7 +32,11 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -170,7 +174,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 resultSet = statement.executeQuery("select * from heartbeat");
                 resultSet.next();
 
-                Toast.makeText(this, "Updated as of: " + resultSet.getString("TimeOfRecord"), Toast.LENGTH_SHORT).show();
+                Date date  = new Date();
+
+                Timestamp ts = Timestamp.valueOf(resultSet.getString("TimeOfRecord"));
+                date.setTime(ts.getTime());
+                String timeStampFormatted = new SimpleDateFormat("MMM dd").format(date);
+
+                Toast.makeText(this, "Updated as of: " + timeStampFormatted, Toast.LENGTH_SHORT).show();
 
             } catch (SQLException e) {
                 e.printStackTrace();

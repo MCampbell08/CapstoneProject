@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
@@ -25,6 +26,9 @@ public class ChartActivity extends AppCompatActivity {
     private static ArrayList<String> heartRateTime = new ArrayList<>();
     private static ArrayList<String> xLabels = new ArrayList<>();
 
+    private static LineChartData data = new LineChartData();
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,20 +41,11 @@ public class ChartActivity extends AppCompatActivity {
         heartRateValSet = preferences.getStringSet("heartbeatValues", null);
         heartRateTimeSet = preferences.getStringSet("heartbeatTimeStamps", null);
 
+        data = new LineChartData();
+        data.setBaseValue(Float.NEGATIVE_INFINITY);
 
-
-        List<PointValue> values = new ArrayList<PointValue>();
-        values.add(new PointValue(0, 2));
-        values.add(new PointValue(1, 4));
-        values.add(new PointValue(2, 3));
-        values.add(new PointValue(3, 0));
-
-        Line line = new Line(values).setColor(Color.RED).setCubic(false);
-        List<Line> lines = new ArrayList<Line>();
-        lines.add(line);
-
-        LineChartData data = new LineChartData();
-        data.setLines(lines);
+        addEntries();
+        addLabels();
 
         LineChartView chart =(LineChartView)findViewById(R.id.lineChart);
         chart.setInteractive(true);
@@ -89,8 +84,33 @@ public class ChartActivity extends AppCompatActivity {
     }
 
     private void addEntries(){
+        List<PointValue> values = new ArrayList<PointValue>();
+        for(int i = 0; i < MAX_LINE_CHART_ENTRIES; i++){
+        }
+        values.add(new PointValue(0, 2));
+        values.add(new PointValue(1, 4));
+        values.add(new PointValue(2, 3));
+        values.add(new PointValue(3, 0));
+
+        Line line = new Line(values).setColor(Color.RED).setCubic(false);
+        List<Line> lines = new ArrayList<Line>();
+        lines.add(line);
+
+        data.setLines(lines);
     }
 
-    private void addXLabels(){
+    private void addLabels(){
+        Axis xAxis = new Axis();
+        Axis yAxis = new Axis().setHasLines(true);
+
+        xAxis.setName("Time Of Record");
+        yAxis.setName("Heartbeat");
+
+        xAxis.setTextColor(Color.BLACK);
+        yAxis.setTextColor(Color.BLACK);
+
+        data.setAxisXBottom(xAxis);
+        data.setAxisYLeft(yAxis);
+
     }
 }
