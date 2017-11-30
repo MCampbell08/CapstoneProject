@@ -2,6 +2,7 @@ package com.example.waffledefender.emotiondetectormobile;
 
 import android.content.Context;
 import android.content.Intent;
+import android.preference.PreferenceScreen;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -72,10 +73,17 @@ public class SwipingListener implements View.OnTouchListener{
     }
 
     public void swipedLeft() {
+        if(_context instanceof MainActivity){
+            Intent intent = new Intent(_context, SettingsActivity.class);
+            _context.startActivity(intent);
+        }
     }
 
     public void swipedBottom() {
-
+        if(_context instanceof ChartActivity){
+            Intent intent = new Intent(_context, MainActivity.class);
+            _context.startActivity(intent);
+        }
     }
 
     public void swipedTop() {

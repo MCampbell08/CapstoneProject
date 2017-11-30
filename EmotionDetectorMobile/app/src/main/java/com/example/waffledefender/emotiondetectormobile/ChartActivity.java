@@ -2,10 +2,14 @@ package com.example.waffledefender.emotiondetectormobile;
 
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -22,11 +26,12 @@ public class ChartActivity extends AppCompatActivity {
     private static Set<String> heartRateValSet;
     private static Set<String> heartRateTimeSet;
 
-    private static ArrayList<String> heartRateVal = new ArrayList<>();
-    private static ArrayList<String> heartRateTime = new ArrayList<>();
-    private static ArrayList<String> xLabels = new ArrayList<>();
+    private ArrayList<String> heartRateVal = new ArrayList<>();
+    private ArrayList<String> heartRateTime = new ArrayList<>();
 
     private static LineChartData data = new LineChartData();
+
+    private static Date date  = new Date();
 
 
     @Override
@@ -34,6 +39,8 @@ public class ChartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chart);
         createLineChart();
+        ConstraintLayout layout = (ConstraintLayout)findViewById(R.id.chartLayout);
+        layout.setOnTouchListener(new SwipingListener(this));
     }
 
     private void createLineChart(){
@@ -44,18 +51,15 @@ public class ChartActivity extends AppCompatActivity {
         data = new LineChartData();
         data.setBaseValue(Float.NEGATIVE_INFINITY);
 
+        placeHeartRatesInOrder();
+        removeHeartRateIdentifiers();
+
         addEntries();
         addLabels();
 
         LineChartView chart =(LineChartView)findViewById(R.id.lineChart);
         chart.setInteractive(true);
         chart.setLineChartData(data);
-
-        placeHeartRatesInOrder();
-        removeHeartRateIdentifiers();
-
-//        addEntries();
-//        addXLabels();
 
     }
 
@@ -85,14 +89,18 @@ public class ChartActivity extends AppCompatActivity {
 
     private void addEntries(){
         List<PointValue> values = new ArrayList<PointValue>();
+
         for(int i = 0; i < MAX_LINE_CHART_ENTRIES; i++){
+            values.add(new PointValue(i, Float.parseFloat(heartRateVal.get(i))));
         }
-        values.add(new PointValue(0, 2));
-        values.add(new PointValue(1, 4));
-        values.add(new PointValue(2, 3));
-        values.add(new PointValue(3, 0));
+
+        if(sameValues()){
+            values.add(0, new PointValue(MAX_LINE_CHART_ENTRIES - MAX_LINE_CHART_ENTRIES - 1, Float.parseFloat(heartRateVal.get(MAX_LINE_CHART_ENTRIES - MAX_LINE_CHART_ENTRIES)) - 1));
+        }
 
         Line line = new Line(values).setColor(Color.RED).setCubic(false);
+        line.setHasLabelsOnlyForSelected(true);
+
         List<Line> lines = new ArrayList<Line>();
         lines.add(line);
 
@@ -103,7 +111,7 @@ public class ChartActivity extends AppCompatActivity {
         Axis xAxis = new Axis();
         Axis yAxis = new Axis().setHasLines(true);
 
-        xAxis.setName("Time Of Record");
+        xAxis.setName("Order of Records");
         yAxis.setName("Heartbeat");
 
         xAxis.setTextColor(Color.BLACK);
@@ -112,5 +120,18 @@ public class ChartActivity extends AppCompatActivity {
         data.setAxisXBottom(xAxis);
         data.setAxisYLeft(yAxis);
 
+    }
+
+    private boolean sameValues(){
+        float currentVal = 0f;
+        float previousVal = 0f;
+        for(int i = 0; i < MAX_LINE_CHART_ENTRIES; i++ ){
+            if(currentVal != previousVal && previousVal != 0){
+                return false;
+            }
+            previousVal = currentVal;
+            currentVal = Float.parseFloat(heartRateVal.get(i));
+        }
+        return true;
     }
 }

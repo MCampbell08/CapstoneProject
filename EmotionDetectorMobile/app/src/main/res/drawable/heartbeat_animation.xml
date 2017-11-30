@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:oneshot="true">
+    <item android:drawable="@drawable/heart_icon" android:height="75dp" android:width="75dp" android:duration="20"/>
+    <item android:drawable="@drawable/heart_icon" android:height="50dp" android:width="50dp" android:duration="10"/>
+    <item android:drawable="@drawable/heart_icon" android:height="75dp" android:width="75dp" android:duration="20"/>
+    <item android:drawable="@drawable/heart_icon" android:height="50dp" android:width="20dp" android:duration="10"/>
+    <item android:drawable="@drawable/heart_icon" android:height="75dp" android:width="75dp" android:duration="40"/>
+</animation-list>

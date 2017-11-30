@@ -1,14 +1,17 @@
 package com.example.waffledefender.emotiondetectormobile;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.support.constraint.ConstraintLayout;
@@ -51,12 +54,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static String hostname = "heartbeatdata.cvqgs9wo2qak.us-west-1.rds.amazonaws.com";
     private static String port = "3306";
 
+    private static boolean heartbeatAnimate = false;
+
     private static EmotionTranslate translate = null;
+
     private static ArrayList<String> heartRateValues = null;
     private static ArrayList<String> heartRateTimeStamps = null;
 
     private static final int RESULT_LOAD_IMAGE = 1;
     private static final int PIC_CROP = 2;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setOnClickListeners();
         ConstraintLayout layout = (ConstraintLayout)findViewById(R.id.mainLayout);
         layout.setOnTouchListener(new SwipingListener(this));
+        new HeartbeatAnimation(this).execute("");
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
@@ -127,7 +135,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    @SuppressLint("NewApi")
     private void displayHeartbeat(){
         if(connection != null) {
             try {
@@ -178,7 +185,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 Timestamp ts = Timestamp.valueOf(resultSet.getString("TimeOfRecord"));
                 date.setTime(ts.getTime());
-                String timeStampFormatted = new SimpleDateFormat("MMM dd").format(date);
+
+                String timeStampFormatted = new SimpleDateFormat("yyyy").format(date);
+
+                if(Double.parseDouble(new SimpleDateFormat("yyyy").format(new Date())) != Double.parseDouble(timeStampFormatted)){
+                    timeStampFormatted = new SimpleDateFormat("MMM dd, yyyy").format(date);
+                }
+                else {
+                    timeStampFormatted = new SimpleDateFormat("MMM dd").format(date);
+                }
 
                 Toast.makeText(this, "Updated as of: " + timeStampFormatted, Toast.LENGTH_SHORT).show();
 
@@ -265,4 +280,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
         }
     }
+
+    public static void setHeartbeatAnimate(boolean bool){
+        heartbeatAnimate = bool;
+    }
+
+    public static boolean getHeartbeatAnimate(){
+        return heartbeatAnimate;
+    }
+
+    public class HeartbeatAnimation extends AsyncTask<String, Void, String> {
+
+        private Activity _activity = null;
+        private AnimationDrawable animationDrawable = null;
+
+        public HeartbeatAnimation(Activity activity){
+            _activity = activity;
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            while (!MainActivity.getHeartbeatAnimate()) {
+                if (MainActivity.getHeartbeatAnimate()) {
+                    ImageView heartImage = _activity.findViewById(R.id.heartIcon);
+                    heartImage.setBackgroundResource(R.drawable.heartbeat_animation);
+                    animationDrawable = (AnimationDrawable) heartImage.getBackground();
+                }
+            }
+            return "Animation Done";
+        }
+    }
+
 }
