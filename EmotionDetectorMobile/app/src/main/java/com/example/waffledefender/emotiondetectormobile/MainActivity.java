@@ -42,9 +42,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Set;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener  {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, Observer {
 
     private Connection connection = null;
 
@@ -73,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setOnClickListeners();
         ConstraintLayout layout = (ConstraintLayout)findViewById(R.id.mainLayout);
         layout.setOnTouchListener(new SwipingListener(this));
-        new HeartbeatAnimation(this).execute("");
+        new HeartbeatAnimation().execute("");
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
@@ -271,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             cropIntent.putExtra("aspectX", 1);
             cropIntent.putExtra("aspectY", 1);
             cropIntent.putExtra("outputX", 256);
-            cropIntent.putExtra("outputY", 256);
+            cropIntent.putExtra("outputY", 456);
             cropIntent.putExtra("return-data", true);
             startActivityForResult(cropIntent, PIC_CROP);
         }
@@ -289,22 +291,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return heartbeatAnimate;
     }
 
+    @Override
+    public void update(Observable observable, Object o) {
+
+    }
+
     public class HeartbeatAnimation extends AsyncTask<String, Void, String> {
 
-        private Activity _activity = null;
         private AnimationDrawable animationDrawable = null;
-
-        public HeartbeatAnimation(Activity activity){
-            _activity = activity;
-        }
 
         @Override
         protected String doInBackground(String... strings) {
             while (!MainActivity.getHeartbeatAnimate()) {
                 if (MainActivity.getHeartbeatAnimate()) {
-                    ImageView heartImage = _activity.findViewById(R.id.heartIcon);
-                    heartImage.setBackgroundResource(R.drawable.heartbeat_animation);
-                    animationDrawable = (AnimationDrawable) heartImage.getBackground();
+                    final ImageView heartImage = (ImageView) findViewById(R.id.heartIcon);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            heartImage.setImageResource(R.drawable.heartbeat_animation);
+                            heartImage.setBackgroundResource(R.drawable.heartbeat_animation);
+                            animationDrawable = (AnimationDrawable) heartImage.getBackground();
+                        }
+                    });
+                    animationDrawable.start();
                 }
             }
             return "Animation Done";
