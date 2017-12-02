@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final int RESULT_LOAD_IMAGE = 1;
     private static final int PIC_CROP = 2;
 
+    private static Observable observable = new Observable();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ConstraintLayout layout = (ConstraintLayout)findViewById(R.id.mainLayout);
         layout.setOnTouchListener(new SwipingListener(this));
         new HeartbeatAnimation().execute("");
+        observable.addObserver(this);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
@@ -135,6 +137,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         catch (Exception e){
             Toast.makeText(this, "Can not use this image, please try again or select another!", Toast.LENGTH_SHORT).show();
         }
+    }
+    @Override
+    public void update(Observable observable, Object o) {
+
     }
 
     private void displayHeartbeat(){
@@ -283,17 +289,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    public static void setHeartbeatAnimate(boolean bool){
+    public void setHeartbeatAnimate(boolean bool){
         heartbeatAnimate = bool;
+        observable.notifyObservers();
     }
 
     public static boolean getHeartbeatAnimate(){
         return heartbeatAnimate;
-    }
-
-    @Override
-    public void update(Observable observable, Object o) {
-
     }
 
     public class HeartbeatAnimation extends AsyncTask<String, Void, String> {
@@ -319,5 +321,49 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return "Animation Done";
         }
     }
+    public class ObservedObject extends Observable {
+        private Boolean watchedValue;
 
+        public ObservedObject(Boolean value) {
+            watchedValue = value;
+        }
+
+        public void setValue(Boolean value) {
+
+            if(!watchedValue.equals(value)) {
+                watchedValue = value;
+
+                setChanged();
+            }
+
+        }
+    }
+//    public class ObservableDemo implements Observer {
+//        public String name;
+//        public ObservableDemo(String name) {
+//            this.name = name;
+//        }
+//
+//        public static void main(String[] args) {
+//            // create watched and watcher objects
+//            ObservedObject watched = new ObservedObject("Original Value");
+//            // watcher object listens to object change
+//            ObservableDemo watcher = new ObservableDemo("Watcher");
+//            // add observer to the watched object
+//            watched.addObserver(watcher);
+//
+//            // trigger value change
+//            System.out.println("setValue method called...");
+//            watched.setValue("New Value");
+//            // check if value has changed
+//            if(watched.hasChanged())
+//                System.out.println("Value changed");
+//            else
+//                System.out.println("Value not changed");
+//        }
+//
+//        public void update(Observable obj, Object arg) {
+//            System.out.println("Update called");
+//        }
+//    }
 }
