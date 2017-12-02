@@ -3,6 +3,7 @@ package com.example.waffledefender.emotiondetectormobile;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -64,6 +65,10 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
 
         Preference petAge = findPreference("pref_key_dog_age");
         EditTextPreference editPetAge = (EditTextPreference) petAge;
+
+        Preference beatHeartbeat = findPreference("pref_key_beat_heartbeat");
+        CheckBoxPreference editBeatHeartbeat = (CheckBoxPreference) beatHeartbeat;
+        editPref.putBoolean("beatHeartbeat", editBeatHeartbeat.isChecked());
 
         for(Character c : editPetAge.getText().toCharArray()){
             if(Character.isLetter(c)){

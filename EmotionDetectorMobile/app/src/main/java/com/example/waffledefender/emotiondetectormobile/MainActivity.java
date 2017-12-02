@@ -13,6 +13,8 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.StrictMode;
+import android.preference.CheckBoxPreference;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.view.MotionEventCompat;
@@ -66,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final int RESULT_LOAD_IMAGE = 1;
     private static final int PIC_CROP = 2;
 
-    private static Observable observable = new Observable();
+    private static ObservedObject observedObject = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,8 +78,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setOnClickListeners();
         ConstraintLayout layout = (ConstraintLayout)findViewById(R.id.mainLayout);
         layout.setOnTouchListener(new SwipingListener(this));
-        new HeartbeatAnimation().execute("");
-        observable.addObserver(this);
+        new HeartbeatAnimation(this).execute("");
+        observedObject.addObserver(this);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
@@ -228,11 +230,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void initPreferences(){
         String heartbeatNum = "00";
         SharedPreferences preferences = getSharedPreferences("Preferences", 0);
+        SharedPreferences settingsPreferences = getSharedPreferences("SettingsPreferences", 0);
         if(preferences.contains("heartbeatVal")){
 
             String beat = preferences.getString("heartbeatVal", "00");
             String emotion = preferences.getString("heartbeatEmotion", "Meh");
             String imageStream = preferences.getString("profileStream", "");
+            Boolean animateHeartbeat = settingsPreferences.getBoolean("beatHeartbeat", false);
 
             TextView heartbeatTextView = (TextView) findViewById(R.id.heartrate);
             heartbeatTextView.setText(beat);
@@ -241,6 +245,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             emotionTextView.setText(emotion);
 
             ImageView imageView = (ImageView) findViewById(R.id.accountIcon);
+
+            observedObject = new ObservedObject(animateHeartbeat);
+
+            if(animateHeartbeat)
+                setHeartbeatAnimate(animateHeartbeat);
+            else
+                setHeartbeatAnimate(animateHeartbeat);
 
             if(!imageStream.equals("")) {
                 String base = imageStream;
@@ -279,7 +290,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             cropIntent.putExtra("aspectX", 1);
             cropIntent.putExtra("aspectY", 1);
             cropIntent.putExtra("outputX", 256);
-            cropIntent.putExtra("outputY", 456);
+            cropIntent.putExtra("outputY", 256);
             cropIntent.putExtra("return-data", true);
             startActivityForResult(cropIntent, PIC_CROP);
         }
@@ -289,9 +300,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    public void setHeartbeatAnimate(boolean bool){
+    public static void setHeartbeatAnimate(boolean bool){
         heartbeatAnimate = bool;
-        observable.notifyObservers();
     }
 
     public static boolean getHeartbeatAnimate(){
@@ -301,22 +311,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public class HeartbeatAnimation extends AsyncTask<String, Void, String> {
 
         private AnimationDrawable animationDrawable = null;
+        private MainActivity _mainActivity = null;
+
+        public HeartbeatAnimation(MainActivity mainActivity){
+            _mainActivity = mainActivity;
+        }
 
         @Override
         protected String doInBackground(String... strings) {
-            while (!MainActivity.getHeartbeatAnimate()) {
-                if (MainActivity.getHeartbeatAnimate()) {
-                    final ImageView heartImage = (ImageView) findViewById(R.id.heartIcon);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            heartImage.setImageResource(R.drawable.heartbeat_animation);
-                            heartImage.setBackgroundResource(R.drawable.heartbeat_animation);
-                            animationDrawable = (AnimationDrawable) heartImage.getBackground();
-                        }
-                    });
-                    animationDrawable.start();
-                }
+            if (_mainActivity.getHeartbeatAnimate()) {
+                final ImageView heartImage = (ImageView)findViewById(R.id.heartIcon);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        heartImage.setImageDrawable(null);
+                        heartImage.setBackgroundResource(R.drawable.heartbeat_animation);
+                        animationDrawable = (AnimationDrawable)heartImage.getBackground();
+                        animationDrawable.start();
+                    }
+                });
             }
             return "Animation Done";
         }
@@ -338,6 +351,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         }
     }
+
 //    public class ObservableDemo implements Observer {
 //        public String name;
 //        public ObservableDemo(String name) {
