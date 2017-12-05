@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
         catch (Exception e){
-            Toast.makeText(this, "Can not use this image, please try again or select another!", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
         }
     }
 

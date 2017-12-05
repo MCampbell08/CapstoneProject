@@ -63,13 +63,9 @@ public class ChartActivity extends AppCompatActivity {
         addXLabels();
         addYLabels();
 
-//        if(sameValues())
-//            addFixedYLabels();
-//        else
-
         LineChartView chart =(LineChartView)findViewById(R.id.lineChart);
 
-        if(sameValues()){
+        if(checkSameValues()){
             final Viewport viewport = new Viewport(chart.getMaximumViewport());
 
             viewport.bottom = Float.parseFloat(heartRateVal.get(0)) - 1;
@@ -82,7 +78,6 @@ public class ChartActivity extends AppCompatActivity {
             chart.setViewportCalculationEnabled(false);
         }
         chart.setContainerScrollEnabled(true, ContainerScrollType.HORIZONTAL);
-        chart.setLineChartData(data);
         chart.setVisibility(View.VISIBLE);
         chart.setHorizontalScrollBarEnabled(true);
         chart.setZoomType(ZoomType.HORIZONTAL);
@@ -117,14 +112,20 @@ public class ChartActivity extends AppCompatActivity {
 
     private void addEntries(){
         List<PointValue> values = new ArrayList<PointValue>();
+        PointValue pointValue;
+
+        Date date = new Date();
+        Timestamp timestamp;
 
         for(int i = 0; i < MAX_LINE_CHART_ENTRIES; i++){
-            values.add(new PointValue(i, Float.parseFloat(heartRateVal.get(i))));
-        }
+            timestamp = Timestamp.valueOf(heartRateTime.get(i));
+            date.setTime(timestamp.getTime());
 
-//        if(sameValues()){
-//            values.add(0, new PointValue(MAX_LINE_CHART_ENTRIES - MAX_LINE_CHART_ENTRIES - 1, Float.parseFloat(heartRateVal.get(MAX_LINE_CHART_ENTRIES - MAX_LINE_CHART_ENTRIES)) - 1));
-//        }
+            pointValue = new PointValue(i, Float.parseFloat(heartRateVal.get(i)));
+            pointValue.setLabel("Heartbeat: " + pointValue.getY() + " | Time: " + new SimpleDateFormat((checkSameDate() ? "hh:mm:ss a" : "MMM dd | hh:mm:ss a")).format(date));
+
+            values.add(pointValue);
+        }
 
         Line line = new Line(values).setColor(Color.RED).setCubic(false);
         line.setHasLabelsOnlyForSelected(true);
@@ -137,54 +138,58 @@ public class ChartActivity extends AppCompatActivity {
 
     private void addXLabels(){
 
-        //int loopAmount = (sameValues()) ? MAX_LINE_CHART_ENTRIES + 1: MAX_LINE_CHART_ENTRIES;
         List<AxisValue> axisValues = new ArrayList<>();
-        String axisValue = "";
+        String axisValue;
+        Date date = new Date();
+        Timestamp timestamp;
 
         for(int i = 0; i < MAX_LINE_CHART_ENTRIES; i++){
-//            if(loopAmount == 11 && i == 0)
-//                axisValue = "Placeholder";
-//            else
-                axisValue = heartRateTime.get(i);
+            timestamp = Timestamp.valueOf(heartRateTime.get(i));
+            date.setTime(timestamp.getTime());
 
+            axisValue = (checkSameDate()) ? new SimpleDateFormat("hh:mm:ss a").format(date) : new SimpleDateFormat("MMM dd | hh:mm:ss a").format(date);
             axisValues.add(new AxisValue(i).setLabel(axisValue));
         }
 
-        Axis xAxis = new Axis(axisValues).setHasTiltedLabels(true);
+        Axis xAxis = new Axis(axisValues).setHasTiltedLabels(false);
 
-        xAxis.setName("Time Recorded");
+        xAxis.setName((checkSameDate()) ? "Time Recorded as of " + new SimpleDateFormat("MMM dd").format(date) : "Time Recorded");
         xAxis.setTextColor(Color.BLACK);
+        xAxis.setMaxLabelChars((checkSameDate()) ? 6 : 9);
 
         data.setAxisXBottom(xAxis);
     }
 
-    private void addFixedYLabels(){
-        List<AxisValue> axisValues = new ArrayList<>();
-
-        axisValues.add(new AxisValue(0).setLabel(String.valueOf(Double.parseDouble(heartRateVal.get(0)) - 1)));
-        axisValues.add(new AxisValue(1).setLabel(heartRateVal.get(0)));
-        axisValues.add(new AxisValue(2).setLabel(String.valueOf(Double.parseDouble(heartRateVal.get(0)) + 1)));
-
-        Axis yAxis = new Axis(axisValues).setHasLines(true);
-
-        yAxis.setName("Heartbeat");
-        yAxis.setTextColor(Color.BLACK);
-
-        data.setAxisYLeft(yAxis);
-    }
-
     private void addYLabels(){
 
-        Axis yAxis = new Axis().setHasLines(true);
+        Axis yAxis = new Axis().setHasLines(true).setHasTiltedLabels(true);
 
         yAxis.setName("Heartbeat");
         yAxis.setTextColor(Color.BLACK);
-        yAxis.setMaxLabelChars(3);
 
         data.setAxisYLeft(yAxis);
     }
 
-    private boolean sameValues(){
+    private boolean checkSameDate(){
+        String previousDate = "";
+        String currentDate = "";
+        Date date = new Date();
+        Timestamp timestamp = null;
+
+        for(int i = 0; i < MAX_LINE_CHART_ENTRIES; i++){
+            if(!currentDate.equals(previousDate) && !previousDate.equals("")){
+                return false;
+            }
+            previousDate = currentDate;
+            timestamp = Timestamp.valueOf(heartRateTime.get(i));
+            date.setTime(timestamp.getTime());
+            currentDate = new SimpleDateFormat("MMM dd").format(date);
+        }
+
+        return true;
+    }
+
+    private boolean checkSameValues(){
         float currentVal = 0f;
         float previousVal = 0f;
         for(int i = 0; i < MAX_LINE_CHART_ENTRIES; i++ ){
