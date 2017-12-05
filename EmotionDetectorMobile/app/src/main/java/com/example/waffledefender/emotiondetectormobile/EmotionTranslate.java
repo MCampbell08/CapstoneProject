@@ -55,6 +55,10 @@ public class EmotionTranslate {
         return emotionType;
     }
 
+    private void checkRhythym(){
+
+    }
+
     public void setCurrentHeartbeat(String currentHeartbeat) {
         this.currentHeartbeat = currentHeartbeat;
     }
@@ -83,6 +87,7 @@ public class EmotionTranslate {
             }
         }
     }
+
     private void addToArrays(){
         emotionsNumbers.add(relaxedNumbers);
         emotionsNumbers.add(happyNumbers);
@@ -94,10 +99,12 @@ public class EmotionTranslate {
         emotionsNumbersSum.add(excitedAverage);
         emotionsNumbersSum.add(stressedAverage);
     }
+
     private void removeFromArrays(){
         emotionsNumbers.clear();
         emotionsNumbersSum.clear();
     }
+
     private void resetNums(){
         relaxedAverage = 0;
         happyAverage = 0;

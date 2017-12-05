@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.support.v7.app.AppCompatActivity;
@@ -68,8 +69,11 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
 
         Preference beatHeartbeat = findPreference("pref_key_beat_heartbeat");
         CheckBoxPreference editBeatHeartbeat = (CheckBoxPreference) beatHeartbeat;
-        editPref.putBoolean("beatHeartbeat", editBeatHeartbeat.isChecked());
+        editPref.putBoolean("beatHeartbeat", editBeatHeartbeat.isChecked()).commit();
 
+        Preference petSize = findPreference("pref_key_dog_size");
+        ListPreference editPetSize = (ListPreference)petSize;
+        editPref.putString("petSize", editPetSize.getValue());
         for(Character c : editPetAge.getText().toCharArray()){
             if(Character.isLetter(c)){
                 Toast.makeText(this, "Age cannot contain letters, only digits. Defaulting to '42'.", Toast.LENGTH_SHORT).show();

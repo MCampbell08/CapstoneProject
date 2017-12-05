@@ -13,6 +13,12 @@
             android:summary="@string/pref_summary_dog_age"
             android:title="@string/pref_title_dog_age"
             android:defaultValue="42"/>
+        <ListPreference
+            android:key="pref_key_dog_size"
+            android:summary="@string/pref_summary_dog_size"
+            android:title="@string/pref_title_dog_size"
+            android:entries="@array/dog_size_names_array"
+            android:entryValues="@array/dog_size_values_array"/>
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/apps_appearance"

@@ -1,31 +1,23 @@
 package com.example.waffledefender.emotiondetectormobile;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.StrictMode;
-import android.preference.CheckBoxPreference;
-import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.constraint.ConstraintLayout;
-import android.support.v4.view.MotionEventCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Base64;
-import android.util.Log;
-import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -38,17 +30,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Set;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, Observer {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Connection connection = null;
 
@@ -58,8 +46,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static String hostname = "heartbeatdata.cvqgs9wo2qak.us-west-1.rds.amazonaws.com";
     private static String port = "3306";
 
-    private static boolean heartbeatAnimate = false;
-
     private static EmotionTranslate translate = null;
 
     private static ArrayList<String> heartRateValues = null;
@@ -68,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final int RESULT_LOAD_IMAGE = 1;
     private static final int PIC_CROP = 2;
 
-    private static ObservedObject observedObject = null;
+    public static AnimationDrawable animationDrawable = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,8 +64,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setOnClickListeners();
         ConstraintLayout layout = (ConstraintLayout)findViewById(R.id.mainLayout);
         layout.setOnTouchListener(new SwipingListener(this));
-        new HeartbeatAnimation(this).execute("");
-        observedObject.addObserver(this);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
@@ -140,10 +124,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Toast.makeText(this, "Can not use this image, please try again or select another!", Toast.LENGTH_SHORT).show();
         }
     }
-    @Override
-    public void update(Observable observable, Object o) {
-
-    }
 
     private void displayHeartbeat(){
         if(connection != null) {
@@ -172,6 +152,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 heartbeatTextView.setText(heartbeatValue);
                 emotionTextView.setText(emotion);
+
+                addFrames(heartbeatValue);
 
                 Set<String> heartRateValSet = new LinkedHashSet<>();
                 Set<String> heartRateTimeSet = new LinkedHashSet<>();
@@ -246,7 +228,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             ImageView imageView = (ImageView) findViewById(R.id.accountIcon);
 
-            observedObject = new ObservedObject(animateHeartbeat);
+            addFrames(beat);
 
             if(animateHeartbeat)
                 setHeartbeatAnimate(animateHeartbeat);
@@ -267,6 +249,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         translate = new EmotionTranslate(heartbeatNum);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
+    }
+
+    private void addFrames(String heartbeat){
+        ImageView heartImage = (ImageView)findViewById(R.id.heartIcon);
+
+        heartImage.setImageDrawable(null);
+        heartImage.setBackgroundResource(R.drawable.heartbeat_animation);
+        animationDrawable = new AnimationDrawable();
+        animationDrawable = (AnimationDrawable)heartImage.getBackground();
+
+        Double totalMillis = Double.parseDouble(heartbeat);
+        totalMillis = 1000 / (totalMillis / 60);
+        Drawable transparentDrawable = new ColorDrawable(Color.TRANSPARENT);
+
+        animationDrawable.addFrame(getResources().getDrawable(R.drawable.heart_icon), totalMillis.intValue() / 5);
+        animationDrawable.addFrame(transparentDrawable, (totalMillis.intValue() / 5) / 2);
+        animationDrawable.addFrame(getResources().getDrawable(R.drawable.heart_icon), totalMillis.intValue() / 5);
+        animationDrawable.addFrame(transparentDrawable, (totalMillis.intValue() / 5) / 2);
+        animationDrawable.addFrame(getResources().getDrawable(R.drawable.heart_icon), (totalMillis.intValue() / 5) * 2);
     }
 
     private void setOnClickListeners(){
@@ -300,84 +301,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    public static void setHeartbeatAnimate(boolean bool){
-        heartbeatAnimate = bool;
+    public static void setHeartbeatAnimate(boolean heartbeatAnimate){
+        if(heartbeatAnimate)
+            animationDrawable.start();
+        else
+            animationDrawable.stop();
     }
-
-    public static boolean getHeartbeatAnimate(){
-        return heartbeatAnimate;
-    }
-
-    public class HeartbeatAnimation extends AsyncTask<String, Void, String> {
-
-        private AnimationDrawable animationDrawable = null;
-        private MainActivity _mainActivity = null;
-
-        public HeartbeatAnimation(MainActivity mainActivity){
-            _mainActivity = mainActivity;
-        }
-
-        @Override
-        protected String doInBackground(String... strings) {
-            if (_mainActivity.getHeartbeatAnimate()) {
-                final ImageView heartImage = (ImageView)findViewById(R.id.heartIcon);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        heartImage.setImageDrawable(null);
-                        heartImage.setBackgroundResource(R.drawable.heartbeat_animation);
-                        animationDrawable = (AnimationDrawable)heartImage.getBackground();
-                        animationDrawable.start();
-                    }
-                });
-            }
-            return "Animation Done";
-        }
-    }
-    public class ObservedObject extends Observable {
-        private Boolean watchedValue;
-
-        public ObservedObject(Boolean value) {
-            watchedValue = value;
-        }
-
-        public void setValue(Boolean value) {
-
-            if(!watchedValue.equals(value)) {
-                watchedValue = value;
-
-                setChanged();
-            }
-
-        }
-    }
-
-//    public class ObservableDemo implements Observer {
-//        public String name;
-//        public ObservableDemo(String name) {
-//            this.name = name;
-//        }
-//
-//        public static void main(String[] args) {
-//            // create watched and watcher objects
-//            ObservedObject watched = new ObservedObject("Original Value");
-//            // watcher object listens to object change
-//            ObservableDemo watcher = new ObservableDemo("Watcher");
-//            // add observer to the watched object
-//            watched.addObserver(watcher);
-//
-//            // trigger value change
-//            System.out.println("setValue method called...");
-//            watched.setValue("New Value");
-//            // check if value has changed
-//            if(watched.hasChanged())
-//                System.out.println("Value changed");
-//            else
-//                System.out.println("Value not changed");
-//        }
-//
-//        public void update(Observable obj, Object arg) {
-//            System.out.println("Update called");
-//        }
-//    }
 }

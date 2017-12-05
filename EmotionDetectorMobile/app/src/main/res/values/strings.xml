@@ -11,6 +11,9 @@
     <string name="pref_summary_dog_age">The age of your dog.</string>
     <string name="pref_title_dog_age">Age</string>
 
+    <string name="pref_summary_dog_size">Choose size of your pet.</string>
+    <string name="pref_title_dog_size">Size</string>
+
     <string name="pref_summary_beat_heartbeat">Heartbeat on hope screen will beat to heartbeat of your pet.</string>
     <string name="pref_title_beat_heartbeat">Display Beat</string>
 
