@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     heartRateTimeStamps.add(heartbeatTimeStamp);
                 }
                 translate.setCurrentHeartbeat(heartRateValues.get(0));
-                String emotion = translate.translate().toString();
+                String emotion = translate.translate(heartRateValues).toString();
 
                 TextView heartbeatTextView = (TextView) findViewById(R.id.heartrate);
                 TextView emotionTextView = (TextView) findViewById(R.id.currentEmotion);
